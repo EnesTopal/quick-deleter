@@ -45,6 +45,9 @@ fun FileListScreen2() {
     var showConfirmation by remember { mutableStateOf(false) }
     var isDeleteMode by remember { mutableStateOf(false) }
 
+    var previewImageFile by remember { mutableStateOf<File?>(null) }
+    var showPreview by remember { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) loadFiles2(currentDir, fileList)
     }
@@ -70,6 +73,42 @@ fun FileListScreen2() {
     BackHandler(enabled = currentDir != Environment.getExternalStorageDirectory()) {
         currentDir = currentDir.parentFile ?: currentDir
     }
+
+    if (showPreview && previewImageFile != null) {
+        AlertDialog(
+            onDismissRequest = { showPreview = false },
+            confirmButton = {},
+            dismissButton = {
+//                IconButton(onClick = { showPreview = false }) {
+//                    Icon(Icons.Default.Close, contentDescription = "Kapat")
+//                }
+            },
+            title = null,
+            text = {
+                val file = previewImageFile!!
+                val sizeInKB = file.length() / 1024
+                val lastModified = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm")
+                    .format(java.util.Date(file.lastModified()))
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Dosya Adı: ${file.name}")
+                    Image(
+                        painter = rememberAsyncImagePainter(file),
+                        contentDescription = "Fotoğraf Önizleme",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("Boyut: ${sizeInKB} KB")
+                    Text("Son Değişiklik: $lastModified")
+                }
+            },
+            modifier = Modifier
+                .padding(16.dp)
+        )
+    }
+
 
     if (showConfirmation) {
         ConfirmDeletionScreen(selectedFiles) {
@@ -122,7 +161,12 @@ fun FileListScreen2() {
                                 } else if (isDeleteMode) {
                                     if (selectedFiles.contains(file)) selectedFiles.remove(file)
                                     else selectedFiles.add(file)
-                                } else {
+                                }
+                                else if (file.extension.lowercase() in listOf("jpg", "png", "jpeg")) {
+                                    previewImageFile = file
+                                    showPreview = true
+                                }
+                                else {
                                     // dosya önizleme işlemi burada olacak (şu an boş)
                                 }
                             }
