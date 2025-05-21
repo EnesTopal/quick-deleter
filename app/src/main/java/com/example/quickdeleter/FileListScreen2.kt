@@ -33,6 +33,8 @@ import java.io.File
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.window.Dialog
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,39 +76,79 @@ fun FileListScreen2() {
         currentDir = currentDir.parentFile ?: currentDir
     }
 
-    if (showPreview && previewImageFile != null) {
-        AlertDialog(
-            onDismissRequest = { showPreview = false },
-            confirmButton = {},
-            dismissButton = {
-//                IconButton(onClick = { showPreview = false }) {
-//                    Icon(Icons.Default.Close, contentDescription = "Kapat")
+//    if (showPreview && previewImageFile != null) {
+//        AlertDialog(
+//            onDismissRequest = { showPreview = false },
+//            confirmButton = {},
+//            dismissButton = {
+////                IconButton(onClick = { showPreview = false }) {
+////                    Icon(Icons.Default.Close, contentDescription = "Kapat")
+////                }
+//            },
+//            title = null,
+//            text = {
+//                val file = previewImageFile!!
+//                val sizeInKB = file.length() / 1024
+//                val lastModified = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm")
+//                    .format(java.util.Date(file.lastModified()))
+//
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Text("Dosya Adı: ${file.name}")
+//                    Image(
+//                        painter = rememberAsyncImagePainter(file),
+//                        contentDescription = "Fotoğraf Önizleme",
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .aspectRatio(1f)
+//                    )
+//                    Spacer(modifier = Modifier.height(12.dp))
+//                    Text("Boyut: ${sizeInKB} KB")
+//                    Text("Son Değişiklik: $lastModified")
 //                }
-            },
-            title = null,
-            text = {
-                val file = previewImageFile!!
-                val sizeInKB = file.length() / 1024
-                val lastModified = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm")
-                    .format(java.util.Date(file.lastModified()))
+//            },
+//            modifier = Modifier
+//                .padding(16.dp)
+//        )
+//    }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Dosya Adı: ${file.name}")
+    if (showPreview && previewImageFile != null) {
+        Dialog(onDismissRequest = { showPreview = false }) {
+            val file = previewImageFile!!
+            val sizeInKB = file.length() / 1024
+            val lastModified = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm")
+                .format(java.util.Date(file.lastModified()))
+
+            Surface(
+                shape = MaterialTheme.shapes.medium,
+                tonalElevation = 8.dp,
+                modifier = Modifier
+                    .fillMaxWidth(0.99f)
+                    .fillMaxHeight(0.8f) // boyutu burada kontrol edebilirsin
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text("Dosya Adı", style = MaterialTheme.typography.titleLarge.copy(
+                        textDecoration = TextDecoration.Underline
+                    ))
+                    Text(text = file.name)
                     Image(
                         painter = rememberAsyncImagePainter(file),
                         contentDescription = "Fotoğraf Önizleme",
                         modifier = Modifier
                             .fillMaxWidth()
-                            .aspectRatio(1f)
+//                            .weight(1f)
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+//                    Spacer(modifier = Modifier.height(12.dp))
                     Text("Boyut: ${sizeInKB} KB")
                     Text("Son Değişiklik: $lastModified")
                 }
-            },
-            modifier = Modifier
-                .padding(16.dp)
-        )
+            }
+        }
     }
 
 
@@ -161,12 +203,15 @@ fun FileListScreen2() {
                                 } else if (isDeleteMode) {
                                     if (selectedFiles.contains(file)) selectedFiles.remove(file)
                                     else selectedFiles.add(file)
-                                }
-                                else if (file.extension.lowercase() in listOf("jpg", "png", "jpeg")) {
+                                } else if (file.extension.lowercase() in listOf(
+                                        "jpg",
+                                        "png",
+                                        "jpeg"
+                                    )
+                                ) {
                                     previewImageFile = file
                                     showPreview = true
-                                }
-                                else {
+                                } else {
                                     // dosya önizleme işlemi burada olacak (şu an boş)
                                 }
                             }
