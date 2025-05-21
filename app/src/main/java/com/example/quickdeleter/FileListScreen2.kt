@@ -32,8 +32,10 @@ import coil.compose.rememberAsyncImagePainter
 import java.io.File
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 
 
@@ -46,12 +48,17 @@ fun FileListScreen2() {
     val selectedFiles = remember { mutableStateListOf<File>() }
     var showConfirmation by remember { mutableStateOf(false) }
     var isDeleteMode by remember { mutableStateOf(false) }
-
     var previewImageFile by remember { mutableStateOf<File?>(null) }
     var showPreview by remember { mutableStateOf(false) }
 
+    var isSearchActive by remember { mutableStateOf(false) }
+    var searchQuery by remember { mutableStateOf("") }
+    var sortBy by remember { mutableStateOf("İsim") } // "İsim", "Boyut", "Tarih"
+    var isAscending by remember { mutableStateOf(false) } // false = azalan (varsayılan)
+    var showSortMenu by remember { mutableStateOf(false) }
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) loadFiles2(currentDir, fileList)
+        if (isGranted) loadFiles2(currentDir, fileList, sortBy, isAscending)
     }
 
     LaunchedEffect(currentDir) {
@@ -61,55 +68,22 @@ fun FileListScreen2() {
                 intent.data = Uri.parse("package:" + context.packageName)
                 context.startActivity(intent)
             } else {
-                loadFiles2(currentDir, fileList)
+                loadFiles2(currentDir, fileList, sortBy, isAscending)
             }
         } else {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             } else {
-                loadFiles2(currentDir, fileList)
+                loadFiles2(currentDir, fileList, sortBy, isAscending)
             }
         }
     }
 
     BackHandler(enabled = currentDir != Environment.getExternalStorageDirectory()) {
+        isSearchActive = false
         currentDir = currentDir.parentFile ?: currentDir
     }
 
-//    if (showPreview && previewImageFile != null) {
-//        AlertDialog(
-//            onDismissRequest = { showPreview = false },
-//            confirmButton = {},
-//            dismissButton = {
-////                IconButton(onClick = { showPreview = false }) {
-////                    Icon(Icons.Default.Close, contentDescription = "Kapat")
-////                }
-//            },
-//            title = null,
-//            text = {
-//                val file = previewImageFile!!
-//                val sizeInKB = file.length() / 1024
-//                val lastModified = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm")
-//                    .format(java.util.Date(file.lastModified()))
-//
-//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Text("Dosya Adı: ${file.name}")
-//                    Image(
-//                        painter = rememberAsyncImagePainter(file),
-//                        contentDescription = "Fotoğraf Önizleme",
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .aspectRatio(1f)
-//                    )
-//                    Spacer(modifier = Modifier.height(12.dp))
-//                    Text("Boyut: ${sizeInKB} KB")
-//                    Text("Son Değişiklik: $lastModified")
-//                }
-//            },
-//            modifier = Modifier
-//                .padding(16.dp)
-//        )
-//    }
 
     if (showPreview && previewImageFile != null) {
         Dialog(onDismissRequest = { showPreview = false }) {
@@ -143,7 +117,6 @@ fun FileListScreen2() {
                             .fillMaxWidth()
 //                            .weight(1f)
                     )
-//                    Spacer(modifier = Modifier.height(12.dp))
                     Text("Boyut: ${sizeInKB} KB")
                     Text("Son Değişiklik: $lastModified")
                 }
@@ -170,7 +143,17 @@ fun FileListScreen2() {
             },
             topBar = {
                 TopAppBar(
-                    title = { Text(currentDir.name.ifBlank { "Ana Dizin" }) },
+                    title = { if (isSearchActive) {
+                        TextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            placeholder = { Text("Ara...") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        Text(currentDir.name.ifBlank { "Ana Dizin" })
+                    } },
                     navigationIcon = {
                         if (currentDir != Environment.getExternalStorageDirectory()) {
                             IconButton(onClick = {
@@ -181,6 +164,9 @@ fun FileListScreen2() {
                         }
                     },
                     actions = {
+                        IconButton(onClick = { isSearchActive = !isSearchActive; if (!isSearchActive) searchQuery = "" }) {
+                            Icon(Icons.Default.Search, contentDescription = "Ara")
+                        }
                         IconButton(onClick = { isDeleteMode = !isDeleteMode }) {
                             Icon(
                                 imageVector = if (isDeleteMode) Icons.Default.Close else Icons.Default.Delete,
@@ -191,50 +177,95 @@ fun FileListScreen2() {
                 )
             }
         ) { padding ->
-            LazyColumn(modifier = Modifier.padding(padding)) {
-                items(fileList) { file ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                if (file.isDirectory) {
-                                    currentDir = file
-                                } else if (isDeleteMode) {
-                                    if (selectedFiles.contains(file)) selectedFiles.remove(file)
-                                    else selectedFiles.add(file)
-                                } else if (file.extension.lowercase() in listOf(
-                                        "jpg",
-                                        "png",
-                                        "jpeg"
-                                    )
-                                ) {
-                                    previewImageFile = file
-                                    showPreview = true
-                                } else {
-                                    // dosya önizleme işlemi burada olacak (şu an boş)
-                                }
+            val filteredList = if (searchQuery.isBlank()) fileList
+            else fileList.filter { it.name.contains(searchQuery, ignoreCase = true) }
+            Column(modifier = Modifier.padding(padding)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text("Toplam Öğe: ${filteredList.size}", color = Color.Red)
+
+                    // SAĞ TARAFTA SIRALAMA SEÇİMİ
+                    Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
+                        Text(
+                            text = "Sıralama: $sortBy",
+                            modifier = Modifier.clickable { showSortMenu = true }
+                        )
+
+                        DropdownMenu(
+                            expanded = showSortMenu,
+                            onDismissRequest = { showSortMenu = false }
+                        ) {
+                            listOf("İsim", "Boyut", "Tarih").forEach { option ->
+                                DropdownMenuItem(
+                                    text = { Text(option) },
+                                    onClick = {
+                                        showSortMenu = false
+                                        if (option == sortBy) {
+                                            isAscending = !isAscending
+                                        } else {
+                                            sortBy = option
+                                            isAscending = false
+                                        }
+                                        loadFiles2(currentDir, fileList, sortBy, isAscending)
+                                    }
+                                )
                             }
-                            .padding(8.dp)
-                    ) {
-                        if (file.isDirectory) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.folder_logo),
-                                contentDescription = "Klasör",
-                                modifier = Modifier.size(48.dp),
-                                tint = Color.Unspecified
-                            )
-                        } else if (file.extension.lowercase() in listOf("jpg", "png", "jpeg")) {
-                            Image(
-                                painter = rememberAsyncImagePainter(file),
-                                contentDescription = null,
-                                modifier = Modifier.size(48.dp)
-                            )
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(file.name, modifier = Modifier.weight(1f))
-                        if (isDeleteMode && selectedFiles.contains(file)) {
-                            Text("✓", style = MaterialTheme.typography.titleLarge)
+                    }
+                }
+
+                LazyColumn() {
+//                val filteredList = fileList.filter {
+//                    it.name.contains(searchQuery, ignoreCase = true)
+//                }
+                    items(filteredList) { file ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (file.isDirectory) {
+                                        currentDir = file
+                                    } else if (isDeleteMode) {
+                                        if (selectedFiles.contains(file)) selectedFiles.remove(file)
+                                        else selectedFiles.add(file)
+                                    } else if (file.extension.lowercase() in listOf(
+                                            "jpg",
+                                            "png",
+                                            "jpeg"
+                                        )
+                                    ) {
+                                        previewImageFile = file
+                                        showPreview = true
+                                    } else {
+                                        // dosya önizleme işlemi burada olacak (şu an boş)
+                                    }
+                                }
+                                .padding(8.dp)
+                        ) {
+                            if (file.isDirectory) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.folder_logo),
+                                    contentDescription = "Klasör",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = Color.Unspecified
+                                )
+                            } else if (file.extension.lowercase() in listOf("jpg", "png", "jpeg")) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(file),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(48.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(file.name, modifier = Modifier.weight(1f))
+                            if (isDeleteMode && selectedFiles.contains(file)) {
+                                Text("✓", style = MaterialTheme.typography.titleLarge)
+                            }
                         }
                     }
                 }
@@ -243,10 +274,21 @@ fun FileListScreen2() {
     }
 }
 
-fun loadFiles2(directory: File, fileList: MutableList<File>) {
+fun loadFiles2(directory: File, fileList: MutableList<File>, sortBy: String, isAscending: Boolean) {
     Log.d("QuickDeleter", "Scanning: ${directory.absolutePath}")
     val files = directory.listFiles()?.sortedWith(compareBy({ !it.isDirectory }, { it.name })) ?: emptyList()
     Log.d("QuickDeleter", "Found ${files.size} files")
+    val sortedFiles = sortFiles(files, sortBy, isAscending)
     fileList.clear()
-    fileList.addAll(files)
+    fileList.addAll(sortedFiles)
+}
+
+fun sortFiles(files: List<File>, sortBy: String, ascending: Boolean): List<File> {
+    val comparator = when (sortBy) {
+        "Boyut" -> compareBy<File> { it.length() }
+        "Tarih" -> compareBy<File> { it.lastModified() }
+        else -> compareBy<File> { it.name.lowercase() }
+    }
+    return if (ascending) files.sortedWith(comparator)
+    else files.sortedWith(comparator.reversed())
 }
