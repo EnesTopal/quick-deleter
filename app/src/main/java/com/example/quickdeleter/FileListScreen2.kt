@@ -33,10 +33,14 @@ import java.io.File
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+//import androidx.compose.material.icons.filled.ArrowDrop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,12 +58,13 @@ fun FileListScreen2() {
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     var sortBy by remember { mutableStateOf("İsim") } // "İsim", "Boyut", "Tarih"
-    var isAscending by remember { mutableStateOf(false) } // false = azalan (varsayılan)
+    var isAscending by remember { mutableStateOf(true) } // false = azalan (varsayılan)
     var showSortMenu by remember { mutableStateOf(false) }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted) loadFiles2(currentDir, fileList, sortBy, isAscending)
-    }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) loadFiles2(currentDir, fileList, sortBy, isAscending)
+        }
 
     LaunchedEffect(currentDir) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -71,7 +76,11 @@ fun FileListScreen2() {
                 loadFiles2(currentDir, fileList, sortBy, isAscending)
             }
         } else {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+            ) {
                 launcher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
             } else {
                 loadFiles2(currentDir, fileList, sortBy, isAscending)
@@ -106,9 +115,11 @@ fun FileListScreen2() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    Text("Dosya Adı", style = MaterialTheme.typography.titleLarge.copy(
-                        textDecoration = TextDecoration.Underline
-                    ))
+                    Text(
+                        "Dosya Adı", style = MaterialTheme.typography.titleLarge.copy(
+                            textDecoration = TextDecoration.Underline
+                        )
+                    )
                     Text(text = file.name)
                     Image(
                         painter = rememberAsyncImagePainter(file),
@@ -143,28 +154,35 @@ fun FileListScreen2() {
             },
             topBar = {
                 TopAppBar(
-                    title = { if (isSearchActive) {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            placeholder = { Text("Ara...") },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    } else {
-                        Text(currentDir.name.ifBlank { "Ana Dizin" })
-                    } },
+                    title = {
+                        if (isSearchActive) {
+                            TextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                placeholder = { Text("Ara...") },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        } else {
+                            Text(currentDir.name.ifBlank { "Ana Dizin" })
+                        }
+                    },
                     navigationIcon = {
                         if (currentDir != Environment.getExternalStorageDirectory()) {
                             IconButton(onClick = {
                                 currentDir = currentDir.parentFile ?: currentDir
                             }) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Geri"
+                                )
                             }
                         }
                     },
                     actions = {
-                        IconButton(onClick = { isSearchActive = !isSearchActive; if (!isSearchActive) searchQuery = "" }) {
+                        IconButton(onClick = {
+                            isSearchActive = !isSearchActive; if (!isSearchActive) searchQuery = ""
+                        }) {
                             Icon(Icons.Default.Search, contentDescription = "Ara")
                         }
                         IconButton(onClick = { isDeleteMode = !isDeleteMode }) {
@@ -182,18 +200,24 @@ fun FileListScreen2() {
             Column(modifier = Modifier.padding(padding)) {
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(15.dp, 0.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("Toplam Öğe: ${filteredList.size}", color = Color.Red)
+                    Text("Toplam Öğe: ${filteredList.size}")
 
-                    // SAĞ TARAFTA SIRALAMA SEÇİMİ
                     Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
-                        Text(
-                            text = "Sıralama: $sortBy",
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.clickable { showSortMenu = true }
-                        )
+                        ) {
+                            Text("Sıralama: $sortBy")
+                            Icon(
+                                imageVector = if (isAscending) Icons.Default.ArrowDropDown else Icons.Default.KeyboardArrowUp ,
+                                contentDescription = if (isAscending) "Artan" else "Azalan"
+                            )
+                        }
 
                         DropdownMenu(
                             expanded = showSortMenu,
@@ -262,11 +286,48 @@ fun FileListScreen2() {
                                 )
                             }
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(file.name, modifier = Modifier.weight(1f))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(file.name)
+
+                                val infoText = if (file.isDirectory) {
+                                    val itemCount = file.listFiles()?.size ?: 0
+                                    val lastModified = java.text.SimpleDateFormat("d.MM.yyyy")
+                                        .format(java.util.Date(file.lastModified()))
+                                    "$itemCount öge | $lastModified"
+                                } else {
+                                    val sizeInText = if (file.isFile) {
+                                        val bytes = file.length()
+                                        if (bytes >= 1024 * 1024) {
+                                            val mb = bytes / 1024f / 1024f
+                                            "%.1f MB".format(mb)
+                                        } else {
+                                            val kb = bytes / 1024f
+                                            "%.1f KB".format(kb)
+                                        }
+                                    } else {"0 B" }
+                                    val lastModified = java.text.SimpleDateFormat("d.MM.yyyy")
+                                        .format(java.util.Date(file.lastModified()))
+                                    "$sizeInText  |  $lastModified"
+                                }
+
+                                Text(
+                                    text = infoText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Gray
+                                )
+                            }
+
                             if (isDeleteMode && selectedFiles.contains(file)) {
                                 Text("✓", style = MaterialTheme.typography.titleLarge)
                             }
+
                         }
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 8.dp),
+                                thickness = 1.2.dp,
+                                color = Color.DarkGray
+                            )
                     }
                 }
             }
@@ -276,7 +337,8 @@ fun FileListScreen2() {
 
 fun loadFiles2(directory: File, fileList: MutableList<File>, sortBy: String, isAscending: Boolean) {
     Log.d("QuickDeleter", "Scanning: ${directory.absolutePath}")
-    val files = directory.listFiles()?.sortedWith(compareBy({ !it.isDirectory }, { it.name })) ?: emptyList()
+    val files = directory.listFiles()?.sortedWith(compareBy({ !it.isDirectory }, { it.name }))
+        ?: emptyList()
     Log.d("QuickDeleter", "Found ${files.size} files")
     val sortedFiles = sortFiles(files, sortBy, isAscending)
     fileList.clear()
