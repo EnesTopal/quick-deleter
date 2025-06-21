@@ -6,14 +6,20 @@
 
 ## 🚀 Features
 
-- 📂 Navigate through folder structure
-- 🖼️ Image preview support for JPG, PNG, and JPEG files
-- 🗑️ Deletion mode: select multiple files and delete in one action
-- 🔍 Search functionality: filter files by name
-- ↕️ Sorting options: by Name, Size, or Date (ascending/descending)
-- 📄 File size and last modified date display
-- 🧭 Displays item count inside folders
-- ➖ Clean interface with divider lines between items
+- 📂 Navigate through folder structure  
+- 🖼️ Image preview support for JPG, PNG, and JPEG files  
+- 🗑️ Deletion mode: select multiple files and delete in one action  
+- 🔍 Search functionality: filter files by name  
+- ↕️ Sorting options: by Name, Size, or Date (ascending/descending)  
+- 📄 File size and last modified date display  
+- 🧭 Displays item count inside folders  
+- ➖ Clean interface with divider lines between items  
+- 📦 **Move Files and Folders**  
+  Ability to move selected files to a different directory via a "Move" button that appears on long press  
+- 🔄 **State-Aware Deletion**  
+  Only files in the currently visible directory are deleted during deletion action  
+- ✅ **Preserved State After Move**  
+  Deletion mode, and selected files are preserved and updated correctly after moving a file
 
 ---
 
@@ -23,19 +29,15 @@
 
 ---
 
-
 ## 🚧 Feature Work
 
 The following improvements and features are planned for future versions of QuickDeleter:
 
-- 📦 **Move Files and Folders**  
-  Ability to move selected files to a different directory via a "Move" button that appears on long press.
-
 - 🗂️ **Create New Folders**  
   Option to create a new directory while selecting a destination to move files.
 
-- 🔄 **State Persistence Between Screens**  
-  Selected files, current folder path, deletion mode, and scroll position will be preserved across screen navigation.
+- 🔄 **Advanced State Persistence**  
+  Current folder path and UI state will be preserved across configuration changes and deep navigation.
 
 - 📌 **Scroll Position Retention**  
   When returning from navigation (e.g., after moving a file), the previous scroll position will be restored.
@@ -59,4 +61,3 @@ The following improvements and features are planned for future versions of Quick
 
 ```bash
 git clone https://github.com/your_username/QuickDeleter.git
-
