@@ -19,7 +19,7 @@
 - 🔄 **State-Aware Deletion**  
   Only files in the currently visible directory are deleted during deletion action  
 - ✅ **Preserved State After Move**  
-  Scroll position, deletion mode, and selected files are preserved and updated correctly after moving a file
+  Deletion mode, and selected files are preserved and updated correctly after moving a file
 
 ---
 
