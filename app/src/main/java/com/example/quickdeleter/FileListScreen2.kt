@@ -39,7 +39,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.snapshots.SnapshotStateList
-//import androidx.compose.material.icons.filled.ArrowDrop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,8 +58,8 @@ fun FileListScreen2() {
     var showPreview by remember { mutableStateOf(false) }
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var sortBy by remember { mutableStateOf("İsim") } // "İsim", "Boyut", "Tarih"
-    var isAscending by remember { mutableStateOf(true) } // false = azalan (varsayılan)
+    var sortBy by remember { mutableStateOf("İsim") }
+    var isAscending by remember { mutableStateOf(true) }
     var showSortMenu by remember { mutableStateOf(false) }
 
     var showMoveMenuForFile by remember { mutableStateOf<File?>(null) }
@@ -128,7 +127,7 @@ fun FileListScreen2() {
                 tonalElevation = 8.dp,
                 modifier = Modifier
                     .fillMaxWidth(0.99f)
-                    .fillMaxHeight(0.8f) // boyutu burada kontrol edebilirsin
+                    .fillMaxHeight(0.8f)
             ) {
                 Column(
                     modifier = Modifier
@@ -442,78 +441,6 @@ fun sortFiles(files: List<File>, sortBy: String, ascending: Boolean): List<File>
     else files.sortedWith(comparator.reversed())
 }
 
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun MoveDestinationScreen(
-//    fileToMove: File,
-//    onMoveComplete: () -> Unit
-//) {
-//    var currentDir by remember { mutableStateOf(Environment.getExternalStorageDirectory()) }
-//    val folders = remember { mutableStateListOf<File>() }
-//
-//    LaunchedEffect(currentDir) {
-//        val dirList = currentDir.listFiles()?.filter { it.isDirectory } ?: emptyList()
-//        folders.clear()
-//        folders.addAll(dirList)
-//    }
-//
-//    BackHandler(enabled = currentDir != Environment.getExternalStorageDirectory()) {
-//        currentDir = currentDir.parentFile ?: currentDir
-//    }
-//
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text(currentDir.name.ifBlank { "Ana Dizin" }) },
-//                navigationIcon = {
-//                    IconButton(onClick = {
-//                        currentDir = currentDir.parentFile ?: currentDir
-//                    }) {
-//                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
-//                    }
-//                },
-//                actions = {
-//                    IconButton(onClick = {
-//                        val target = File(currentDir, fileToMove.name)
-//                        val moved = fileToMove.renameTo(target)
-//                        if (moved) {
-//                            onMoveComplete()
-//                        } else {
-//                            Log.e(
-//                                "Move",
-//                                "Taşıma başarısız: ${fileToMove.absolutePath} -> ${target.absolutePath}"
-//                            )
-//                        }
-//                    }) {
-//                        Icon(Icons.Default.Check, contentDescription = "Taşı")
-//                    }
-//                }
-//            )
-//        }
-//    ) { padding ->
-//        LazyColumn(modifier = Modifier.padding(padding)) {
-//            items(folders) { folder ->
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .clickable { currentDir = folder }
-//                        .padding(16.dp),
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.folder_logo),
-//                        contentDescription = "Klasör",
-//                        modifier = Modifier.size(32.dp),
-//                        tint = Color.Unspecified
-//                    )
-//                    Spacer(modifier = Modifier.width(12.dp))
-//                    Text(folder.name)
-//                }
-//            }
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
