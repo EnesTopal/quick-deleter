@@ -46,7 +46,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FileListScreen2() {
@@ -71,13 +70,17 @@ fun FileListScreen2() {
         MoveDestinationScreen(
             fileToMove = file,
             onMoveComplete = {
+                selectedFiles.remove(file)
                 loadFiles2(currentDir, fileList, sortBy, isAscending)
                 fileToMove = null
+            },
+            onCancelMove = {
+                fileToMove = null
+                showMoveMenuForFile = null
             }
         )
         return
     }
-
 
 
     val launcher =
@@ -156,20 +159,20 @@ fun FileListScreen2() {
 
 
     if (showConfirmation) {
-        if (showConfirmation) {
-            ConfirmDeletionScreen(
-                selectedFiles = selectedFiles,
-                onConfirm = {
-                    selectedFiles.forEach { it.delete() }
-                    fileList.removeAll(selectedFiles)
-                    selectedFiles.clear()
-                    showConfirmation = false
-                },
-                onDismiss = {
-                    showConfirmation = false
-                }
-            )
-        }
+        val filesInCurrentDir = selectedFiles.filter { it.parentFile == currentDir }
+        ConfirmDeletionScreen(
+            selectedFiles = filesInCurrentDir,
+            onConfirm = {
+                filesInCurrentDir.forEach { it.delete() }
+                fileList.removeAll(filesInCurrentDir)
+                selectedFiles.removeAll(filesInCurrentDir)
+                showConfirmation = false
+            },
+            onDismiss = {
+                showConfirmation = false
+            }
+        )
+
 
     } else {
         Scaffold(
@@ -242,7 +245,7 @@ fun FileListScreen2() {
                         ) {
                             Text("Sıralama: $sortBy")
                             Icon(
-                                imageVector = if (isAscending) Icons.Default.ArrowDropDown else Icons.Default.KeyboardArrowUp ,
+                                imageVector = if (isAscending) Icons.Default.ArrowDropDown else Icons.Default.KeyboardArrowUp,
                                 contentDescription = if (isAscending) "Artan" else "Azalan"
                             )
                         }
@@ -284,7 +287,9 @@ fun FileListScreen2() {
                                         if (file.isDirectory) {
                                             currentDir = file
                                         } else if (isDeleteMode) {
-                                            if (selectedFiles.contains(file)) selectedFiles.remove(file)
+                                            if (selectedFiles.contains(file)) selectedFiles.remove(
+                                                file
+                                            )
                                             else selectedFiles.add(file)
                                         } else if (file.extension.lowercase() in listOf(
                                                 "jpg",
@@ -300,7 +305,9 @@ fun FileListScreen2() {
                                         if (file.isDirectory) {
                                             currentDir = file
                                         } else if (isDeleteMode) {
-                                            if (selectedFiles.contains(file)) selectedFiles.remove(file)
+                                            if (selectedFiles.contains(file)) selectedFiles.remove(
+                                                file
+                                            )
                                             else selectedFiles.add(file)
                                         } else {
                                             showMoveMenuForFile = file
@@ -342,7 +349,9 @@ fun FileListScreen2() {
                                             val kb = bytes / 1024f
                                             "%.1f KB".format(kb)
                                         }
-                                    } else {"0 B" }
+                                    } else {
+                                        "0 B"
+                                    }
                                     val lastModified = java.text.SimpleDateFormat("d.MM.yyyy")
                                         .format(java.util.Date(file.lastModified()))
                                     "$sizeInText  |  $lastModified"
@@ -375,11 +384,11 @@ fun FileListScreen2() {
 
                         }
 
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                thickness = 1.2.dp,
-                                color = Color.DarkGray
-                            )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            thickness = 1.2.dp,
+                            color = Color.DarkGray
+                        )
                     }
                 }
             }
@@ -433,11 +442,85 @@ fun sortFiles(files: List<File>, sortBy: String, ascending: Boolean): List<File>
     else files.sortedWith(comparator.reversed())
 }
 
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun MoveDestinationScreen(
+//    fileToMove: File,
+//    onMoveComplete: () -> Unit
+//) {
+//    var currentDir by remember { mutableStateOf(Environment.getExternalStorageDirectory()) }
+//    val folders = remember { mutableStateListOf<File>() }
+//
+//    LaunchedEffect(currentDir) {
+//        val dirList = currentDir.listFiles()?.filter { it.isDirectory } ?: emptyList()
+//        folders.clear()
+//        folders.addAll(dirList)
+//    }
+//
+//    BackHandler(enabled = currentDir != Environment.getExternalStorageDirectory()) {
+//        currentDir = currentDir.parentFile ?: currentDir
+//    }
+//
+//    Scaffold(
+//        topBar = {
+//            TopAppBar(
+//                title = { Text(currentDir.name.ifBlank { "Ana Dizin" }) },
+//                navigationIcon = {
+//                    IconButton(onClick = {
+//                        currentDir = currentDir.parentFile ?: currentDir
+//                    }) {
+//                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+//                    }
+//                },
+//                actions = {
+//                    IconButton(onClick = {
+//                        val target = File(currentDir, fileToMove.name)
+//                        val moved = fileToMove.renameTo(target)
+//                        if (moved) {
+//                            onMoveComplete()
+//                        } else {
+//                            Log.e(
+//                                "Move",
+//                                "Taşıma başarısız: ${fileToMove.absolutePath} -> ${target.absolutePath}"
+//                            )
+//                        }
+//                    }) {
+//                        Icon(Icons.Default.Check, contentDescription = "Taşı")
+//                    }
+//                }
+//            )
+//        }
+//    ) { padding ->
+//        LazyColumn(modifier = Modifier.padding(padding)) {
+//            items(folders) { folder ->
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .clickable { currentDir = folder }
+//                        .padding(16.dp),
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.folder_logo),
+//                        contentDescription = "Klasör",
+//                        modifier = Modifier.size(32.dp),
+//                        tint = Color.Unspecified
+//                    )
+//                    Spacer(modifier = Modifier.width(12.dp))
+//                    Text(folder.name)
+//                }
+//            }
+//        }
+//    }
+//}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoveDestinationScreen(
     fileToMove: File,
-    onMoveComplete: () -> Unit
+    onMoveComplete: () -> Unit,
+    onCancelMove: () -> Unit
 ) {
     var currentDir by remember { mutableStateOf(Environment.getExternalStorageDirectory()) }
     val folders = remember { mutableStateListOf<File>() }
@@ -448,8 +531,12 @@ fun MoveDestinationScreen(
         folders.addAll(dirList)
     }
 
-    BackHandler(enabled = currentDir != Environment.getExternalStorageDirectory()) {
-        currentDir = currentDir.parentFile ?: currentDir
+    val isAtRoot = currentDir == Environment.getExternalStorageDirectory()
+
+    if (!isAtRoot) {
+        BackHandler {
+            currentDir = currentDir.parentFile ?: currentDir
+        }
     }
 
     Scaffold(
@@ -457,26 +544,33 @@ fun MoveDestinationScreen(
             TopAppBar(
                 title = { Text(currentDir.name.ifBlank { "Ana Dizin" }) },
                 navigationIcon = {
-                    IconButton(onClick = {
-                        currentDir = currentDir.parentFile ?: currentDir
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                    if (!isAtRoot) {
+                        IconButton(onClick = {
+                            currentDir = currentDir.parentFile ?: currentDir
+                        }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                        }
                     }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        val target = File(currentDir, fileToMove.name)
-                        val moved = fileToMove.renameTo(target)
-                        if (moved) {
-                            onMoveComplete()
-                        } else {
-                            Log.e("Move", "Taşıma başarısız: ${fileToMove.absolutePath} -> ${target.absolutePath}")
-                        }
-                    }) {
-                        Icon(Icons.Default.Check, contentDescription = "Taşı")
+                    IconButton(onClick = { onCancelMove()  }) {
+                        Icon(Icons.Default.Close, contentDescription = "İptal Et")
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                val target = File(currentDir, fileToMove.name)
+                val moved = fileToMove.renameTo(target)
+                if (moved) {
+                    onMoveComplete()
+                } else {
+                    Log.e("Move", "Taşıma başarısız: ${fileToMove.absolutePath} -> ${target.absolutePath}")
+                }
+            }) {
+                Icon(Icons.Default.Check, contentDescription = "Taşı")
+            }
         }
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
@@ -501,3 +595,4 @@ fun MoveDestinationScreen(
         }
     }
 }
+
