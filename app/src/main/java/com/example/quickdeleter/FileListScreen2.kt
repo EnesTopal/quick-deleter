@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.runtime.snapshots.SnapshotStateList
 //import androidx.compose.material.icons.filled.ArrowDrop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
@@ -137,12 +138,21 @@ fun FileListScreen2() {
 
 
     if (showConfirmation) {
-        ConfirmDeletionScreen(selectedFiles) {
-            selectedFiles.forEach { it.delete() }
-            fileList.removeAll(selectedFiles)
-            selectedFiles.clear()
-            showConfirmation = false
+        if (showConfirmation) {
+            ConfirmDeletionScreen(
+                selectedFiles = selectedFiles,
+                onConfirm = {
+                    selectedFiles.forEach { it.delete() }
+                    fileList.removeAll(selectedFiles)
+                    selectedFiles.clear()
+                    showConfirmation = false
+                },
+                onDismiss = {
+                    showConfirmation = false
+                }
+            )
         }
+
     } else {
         Scaffold(
             floatingActionButton = {
@@ -334,6 +344,32 @@ fun FileListScreen2() {
         }
     }
 }
+
+@Composable
+fun ConfirmDeletionScreen(
+    selectedFiles: List<File>,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit = {}
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Silme Onayı") },
+        text = {
+            Text("Seçilen ${selectedFiles.size} dosya kalıcı olarak silinecek. Emin misiniz?")
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text("Sil")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Vazgeç")
+            }
+        }
+    )
+}
+
 
 fun loadFiles2(directory: File, fileList: MutableList<File>, sortBy: String, isAscending: Boolean) {
     Log.d("QuickDeleter", "Scanning: ${directory.absolutePath}")
