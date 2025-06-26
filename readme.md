@@ -51,6 +51,9 @@ The following improvements and features are planned for future versions of Quick
 - 🌙 **Dark Mode Optimization**  
   Improved visual appearance and readability in dark theme.
 
+- 🧱 **Class Modularity & Code Structure Enhancement**  
+  Refactor the codebase into reusable and well-structured classes and components to improve maintainability and scalability.
+
 ---
 
 *More enhancements and UI refinements are on the roadmap as the project evolves.*
