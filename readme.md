@@ -63,4 +63,4 @@ The following improvements and features are planned for future versions of Quick
 > To open and run the project in Android Studio:
 
 ```bash
-git clone https://github.com/your_username/QuickDeleter.git
+git clone https://github.com/EnesTopal/quick-deleter.git
