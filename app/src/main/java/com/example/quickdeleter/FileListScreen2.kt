@@ -58,7 +58,7 @@ fun FileListScreen2() {
     var showPreview by remember { mutableStateOf(false) }
     var isSearchActive by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
-    var sortBy by remember { mutableStateOf("İsim") }
+    var sortBy by remember { mutableStateOf("Name") }
     var isAscending by remember { mutableStateOf(true) }
     var showSortMenu by remember { mutableStateOf(false) }
 
@@ -137,20 +137,20 @@ fun FileListScreen2() {
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text(
-                        "Dosya Adı", style = MaterialTheme.typography.titleLarge.copy(
+                        "File name", style = MaterialTheme.typography.titleLarge.copy(
                             textDecoration = TextDecoration.Underline
                         )
                     )
                     Text(text = file.name)
                     Image(
                         painter = rememberAsyncImagePainter(file),
-                        contentDescription = "Fotoğraf Önizleme",
+                        contentDescription = "Photo Preview",
                         modifier = Modifier
                             .fillMaxWidth()
 //                            .weight(1f)
                     )
-                    Text("Boyut: ${sizeInKB} KB")
-                    Text("Son Değişiklik: $lastModified")
+                    Text("Size: ${sizeInKB} KB")
+                    Text("Last Modified: $lastModified")
                 }
             }
         }
@@ -178,7 +178,7 @@ fun FileListScreen2() {
             floatingActionButton = {
                 if (isDeleteMode && selectedFiles.isNotEmpty()) {
                     FloatingActionButton(onClick = { showConfirmation = true }) {
-                        Text("Tamamla")
+                        Text("Complete")
                     }
                 }
             },
@@ -189,12 +189,12 @@ fun FileListScreen2() {
                             TextField(
                                 value = searchQuery,
                                 onValueChange = { searchQuery = it },
-                                placeholder = { Text("Ara...") },
+                                placeholder = { Text("Search...") },
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth()
                             )
                         } else {
-                            Text(currentDir.name.ifBlank { "Ana Dizin" })
+                            Text(currentDir.name.ifBlank { "Main Directory" })
                         }
                     },
                     navigationIcon = {
@@ -204,7 +204,7 @@ fun FileListScreen2() {
                             }) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Geri"
+                                    contentDescription = "Back"
                                 )
                             }
                         }
@@ -213,12 +213,12 @@ fun FileListScreen2() {
                         IconButton(onClick = {
                             isSearchActive = !isSearchActive; if (!isSearchActive) searchQuery = ""
                         }) {
-                            Icon(Icons.Default.Search, contentDescription = "Ara")
+                            Icon(Icons.Default.Search, contentDescription = "Search")
                         }
                         IconButton(onClick = { isDeleteMode = !isDeleteMode }) {
                             Icon(
                                 imageVector = if (isDeleteMode) Icons.Default.Close else Icons.Default.Delete,
-                                contentDescription = if (isDeleteMode) "Silme Modundan Çık" else "Silme Modu"
+                                contentDescription = if (isDeleteMode) "Exit Delete Mode" else "Delete Mode"
                             )
                         }
                     }
@@ -235,17 +235,17 @@ fun FileListScreen2() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("Toplam Öğe: ${filteredList.size}")
+                    Text("Total Items: ${filteredList.size}")
 
                     Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.clickable { showSortMenu = true }
                         ) {
-                            Text("Sıralama: $sortBy")
+                            Text("Sort: $sortBy")
                             Icon(
                                 imageVector = if (isAscending) Icons.Default.ArrowDropDown else Icons.Default.KeyboardArrowUp,
-                                contentDescription = if (isAscending) "Artan" else "Azalan"
+                                contentDescription = if (isAscending) "Ascending" else "Descending"
                             )
                         }
 
@@ -253,7 +253,7 @@ fun FileListScreen2() {
                             expanded = showSortMenu,
                             onDismissRequest = { showSortMenu = false }
                         ) {
-                            listOf("İsim", "Boyut", "Tarih").forEach { option ->
+                            listOf("Name", "Size", "Date").forEach { option ->
                                 DropdownMenuItem(
                                     text = { Text(option) },
                                     onClick = {
@@ -403,18 +403,18 @@ fun ConfirmDeletionScreen(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Silme Onayı") },
+        title = { Text("Confirmation of Deletion") },
         text = {
-            Text("Seçilen ${selectedFiles.size} dosya kalıcı olarak silinecek. Emin misiniz?")
+            Text("The selected ${selectedFiles.size} files will be permanently deleted. Are you sure?")
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Sil")
+                Text("Delete")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Vazgeç")
+                Text("Cancel")
             }
         }
     )
@@ -433,8 +433,8 @@ fun loadFiles2(directory: File, fileList: MutableList<File>, sortBy: String, isA
 
 fun sortFiles(files: List<File>, sortBy: String, ascending: Boolean): List<File> {
     val comparator = when (sortBy) {
-        "Boyut" -> compareBy<File> { it.length() }
-        "Tarih" -> compareBy<File> { it.lastModified() }
+        "Size" -> compareBy<File> { it.length() }
+        "Date" -> compareBy<File> { it.lastModified() }
         else -> compareBy<File> { it.name.lowercase() }
     }
     return if (ascending) files.sortedWith(comparator)
@@ -469,19 +469,19 @@ fun MoveDestinationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(currentDir.name.ifBlank { "Ana Dizin" }) },
+                title = { Text(currentDir.name.ifBlank { "Main Directory" }) },
                 navigationIcon = {
                     if (!isAtRoot) {
                         IconButton(onClick = {
                             currentDir = currentDir.parentFile ?: currentDir
                         }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
                 },
                 actions = {
                     IconButton(onClick = { onCancelMove()  }) {
-                        Icon(Icons.Default.Close, contentDescription = "İptal Et")
+                        Icon(Icons.Default.Close, contentDescription = "Cancel")
                     }
                 }
             )
@@ -493,10 +493,10 @@ fun MoveDestinationScreen(
                 if (moved) {
                     onMoveComplete()
                 } else {
-                    Log.e("Move", "Taşıma başarısız: ${fileToMove.absolutePath} -> ${target.absolutePath}")
+                    Log.e("Move", "Failed to move: ${fileToMove.absolutePath} -> ${target.absolutePath}")
                 }
             }) {
-                Icon(Icons.Default.Check, contentDescription = "Taşı")
+                Icon(Icons.Default.Check, contentDescription = "Move")
             }
         }
     ) { padding ->
@@ -511,7 +511,7 @@ fun MoveDestinationScreen(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.folder_logo),
-                        contentDescription = "Klasör",
+                        contentDescription = "Folder",
                         modifier = Modifier.size(32.dp),
                         tint = Color.Unspecified
                     )
