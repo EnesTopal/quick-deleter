@@ -25,7 +25,28 @@
 
 ## 📸 Screenshots
 
-> (Under construction - screenshots will be added soon)
+<table>
+  <tr>
+    <td align="center">
+      🗑️ <strong>Deletion Mode</strong><br/>
+      <img src="screenshots/delete1.png" alt="Deletion Mode" width="300"/><br/>
+    </td>
+    <td align="center">
+      ✅ <strong>Delete Confirmation</strong><br/>
+      <img src="screenshots/confirmation.png" alt="Delete Confirmation" width="300"/><br/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      📂 <strong>Move Files</strong><br/>
+      <img src="screenshots/move_button.png" alt="Move Files" width="300"/><br/>
+    </td>
+    <td align="center">
+      ↕️ <strong>Sort Files</strong><br/>
+      <img src="screenshots/sort.png" alt="Sort Files" width="300"/><br/>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -40,7 +61,7 @@ The following improvements and features are planned for future versions of Quick
   Current folder path and UI state will be preserved across configuration changes and deep navigation.
 
 - 📌 **Scroll Position Retention**  
-  When returning from navigation (e.g., after moving a file), the previous scroll position will be restored.
+  When returning from navigation (after moving a file), the previous scroll position will be restored.
 
 - ✏️ **Rename Files and Folders**  
   Ability to rename files or folders with a simple dialog interface.
