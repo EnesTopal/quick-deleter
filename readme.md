@@ -85,3 +85,8 @@ The following improvements and features are planned for future versions of Quick
 
 ```bash
 git clone https://github.com/EnesTopal/quick-deleter.git
+``` 
+
+---
+
+© 2025 Enes Topal. MIT License.
