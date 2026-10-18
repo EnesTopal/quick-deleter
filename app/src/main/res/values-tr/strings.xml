@@ -1,0 +1,98 @@
+<resources>
+    <string name="internal_storage">Dahili depolama</string>
+
+    <!-- Top bar -->
+    <string name="action_back">Geri</string>
+    <string name="action_search">Ara</string>
+    <string name="action_close_search">Aramayı kapat</string>
+    <string name="action_clear">Temizle</string>
+    <string name="search_hint">Bu klasörde ara…</string>
+    <string name="action_select_mode">Dosya seç</string>
+    <string name="action_exit_selection">Seçimden çık</string>
+    <string name="action_select_all">Tümünü seç</string>
+    <string name="action_more">Diğer seçenekler</string>
+    <string name="action_show_hidden">Gizli dosyaları göster</string>
+    <string name="action_hide_empty">Boş klasörleri gizle</string>
+    <string name="action_new_folder">Yeni klasör</string>
+    <string name="action_refresh">Yenile</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d seçildi</item>
+        <item quantity="other">%d seçildi</item>
+    </plurals>
+
+    <!-- List -->
+    <plurals name="item_count">
+        <item quantity="one">%d öğe</item>
+        <item quantity="other">%d öğe</item>
+    </plurals>
+    <string name="sort_name">Ad</string>
+    <string name="sort_size">Boyut</string>
+    <string name="sort_date">Tarih</string>
+    <string name="sort_ascending">Artan</string>
+    <string name="sort_descending">Azalan</string>
+    <string name="folder">Klasör</string>
+    <string name="selected">Seçili</string>
+    <string name="empty_folder_title">Bu klasör boş</string>
+    <string name="empty_folder_body">Burada temizlenecek bir şey yok.</string>
+    <string name="empty_search_title">Sonuç yok</string>
+    <string name="empty_search_body">Bu klasörde \"%1$s\" ile eşleşen dosya yok.</string>
+
+    <!-- Actions -->
+    <string name="action_select">Seç</string>
+    <string name="action_move">Taşı</string>
+    <string name="action_rename">Yeniden adlandır</string>
+    <string name="action_delete">Sil</string>
+    <string name="action_details">Ayrıntılar</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_create">Oluştur</string>
+    <string name="action_undo">Geri al</string>
+    <string name="action_move_here">Buraya taşı</string>
+    <string name="delete_selected">Sil (%d)</string>
+
+    <!-- Dialogs -->
+    <string name="delete_title">Dosyalar silinsin mi?</string>
+    <plurals name="delete_message">
+        <item quantity="one">\"%2$s\" silinecek. Birkaç saniye içinde geri alabilirsiniz.</item>
+        <item quantity="other">Bu klasördeki %1$d dosya silinecek. Birkaç saniye içinde geri alabilirsiniz.</item>
+    </plurals>
+    <string name="rename_title">Yeniden adlandır</string>
+    <string name="new_folder_title">Yeni klasör</string>
+    <string name="name_label">Ad</string>
+    <string name="details_size">Boyut</string>
+    <string name="details_modified">Değiştirilme</string>
+    <string name="details_location">Konum</string>
+    <string name="conflict_title">Dosya zaten var</string>
+    <string name="conflict_message">\"%1$s\" bu klasörde zaten mevcut.</string>
+    <string name="conflict_replace">Değiştir</string>
+    <string name="conflict_keep_both">İkisini de tut</string>
+
+    <!-- Move -->
+    <string name="move_title">\"%1$s\" taşı</string>
+    <string name="move_no_folders">Alt klasör yok</string>
+
+    <!-- Messages -->
+    <plurals name="msg_deleted">
+        <item quantity="one">%d dosya silindi</item>
+        <item quantity="other">%d dosya silindi</item>
+    </plurals>
+    <plurals name="msg_delete_failed">
+        <item quantity="one">%d dosya silinemedi</item>
+        <item quantity="other">%d dosya silinemedi</item>
+    </plurals>
+    <plurals name="msg_restored">
+        <item quantity="one">%d dosya geri yüklendi</item>
+        <item quantity="other">%d dosya geri yüklendi</item>
+    </plurals>
+    <string name="msg_restore_failed">Bazı dosyalar geri yüklenemedi</string>
+    <string name="msg_moved">\"%1$s\", %2$s klasörüne taşındı</string>
+    <string name="msg_move_same">Dosya zaten bu klasörde</string>
+    <string name="msg_move_failed">\"%1$s\" taşınamadı</string>
+    <string name="msg_name_invalid">Lütfen geçerli bir ad girin</string>
+    <string name="msg_name_exists">Bu adda bir öğe zaten var</string>
+    <string name="msg_failed">İşlem başarısız oldu</string>
+
+    <!-- Permission -->
+    <string name="permission_title">Depolama erişimi gerekli</string>
+    <string name="permission_body">QuickDeleter\'ın dosyalarınızı gezebilmesi, taşıyabilmesi ve silebilmesi için \"Tüm dosyalara erişim\" izni gerekir. Hiçbir veri cihazınızdan çıkmaz.</string>
+    <string name="permission_grant">Erişim izni ver</string>
+</resources>

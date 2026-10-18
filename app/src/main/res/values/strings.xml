@@ -1,3 +1,99 @@
 <resources>
-    <string name="app_name">quickdeleter</string>
+    <string name="app_name" translatable="false">QuickDeleter</string>
+    <string name="internal_storage">Internal storage</string>
+
+    <!-- Top bar -->
+    <string name="action_back">Back</string>
+    <string name="action_search">Search</string>
+    <string name="action_close_search">Close search</string>
+    <string name="action_clear">Clear</string>
+    <string name="search_hint">Search in this folder…</string>
+    <string name="action_select_mode">Select files</string>
+    <string name="action_exit_selection">Exit selection</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_more">More options</string>
+    <string name="action_show_hidden">Show hidden files</string>
+    <string name="action_hide_empty">Hide empty folders</string>
+    <string name="action_new_folder">New folder</string>
+    <string name="action_refresh">Refresh</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+
+    <!-- List -->
+    <plurals name="item_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="sort_name">Name</string>
+    <string name="sort_size">Size</string>
+    <string name="sort_date">Date</string>
+    <string name="sort_ascending">Ascending</string>
+    <string name="sort_descending">Descending</string>
+    <string name="folder">Folder</string>
+    <string name="selected">Selected</string>
+    <string name="empty_folder_title">This folder is empty</string>
+    <string name="empty_folder_body">There is nothing to clean up here.</string>
+    <string name="empty_search_title">No matches</string>
+    <string name="empty_search_body">No file in this folder matches \"%1$s\".</string>
+
+    <!-- Actions -->
+    <string name="action_select">Select</string>
+    <string name="action_move">Move</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_details">Details</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_create">Create</string>
+    <string name="action_undo">Undo</string>
+    <string name="action_move_here">Move here</string>
+    <string name="delete_selected">Delete (%d)</string>
+
+    <!-- Dialogs -->
+    <string name="delete_title">Delete files?</string>
+    <plurals name="delete_message">
+        <item quantity="one">\"%2$s\" will be deleted. You can undo this for a few seconds.</item>
+        <item quantity="other">%1$d files in this folder will be deleted. You can undo this for a few seconds.</item>
+    </plurals>
+    <string name="rename_title">Rename</string>
+    <string name="new_folder_title">New folder</string>
+    <string name="name_label">Name</string>
+    <string name="details_size">Size</string>
+    <string name="details_modified">Modified</string>
+    <string name="details_location">Location</string>
+    <string name="conflict_title">File already exists</string>
+    <string name="conflict_message">\"%1$s\" already exists in this folder.</string>
+    <string name="conflict_replace">Replace</string>
+    <string name="conflict_keep_both">Keep both</string>
+
+    <!-- Move -->
+    <string name="move_title">Move \"%1$s\"</string>
+    <string name="move_no_folders">No subfolders</string>
+
+    <!-- Messages -->
+    <plurals name="msg_deleted">
+        <item quantity="one">%d file deleted</item>
+        <item quantity="other">%d files deleted</item>
+    </plurals>
+    <plurals name="msg_delete_failed">
+        <item quantity="one">%d file could not be deleted</item>
+        <item quantity="other">%d files could not be deleted</item>
+    </plurals>
+    <plurals name="msg_restored">
+        <item quantity="one">%d file restored</item>
+        <item quantity="other">%d files restored</item>
+    </plurals>
+    <string name="msg_restore_failed">Some files could not be restored</string>
+    <string name="msg_moved">\"%1$s\" moved to %2$s</string>
+    <string name="msg_move_same">The file is already in this folder</string>
+    <string name="msg_move_failed">\"%1$s\" could not be moved</string>
+    <string name="msg_name_invalid">Please enter a valid name</string>
+    <string name="msg_name_exists">An item with this name already exists</string>
+    <string name="msg_failed">The operation failed</string>
+
+    <!-- Permission -->
+    <string name="permission_title">Storage access needed</string>
+    <string name="permission_body">QuickDeleter needs \"All files access\" to browse, move and delete your files. Nothing leaves your device.</string>
+    <string name="permission_grant">Grant access</string>
 </resources>

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "quickdeleter"
+rootProject.name = "QuickDeleter"
 include(":app")
  

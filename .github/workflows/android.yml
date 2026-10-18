@@ -1,0 +1,54 @@
+name: Android CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Lint
+        run: ./gradlew lintDebug
+
+      - name: Build release
+        # Signing is optional: add the QD_KEYSTORE_BASE64, QD_KEYSTORE_PASSWORD, QD_KEY_ALIAS and
+        # QD_KEY_PASSWORD repository secrets to get a signed APK/AAB.
+        env:
+          QD_KEYSTORE_BASE64: ${{ secrets.QD_KEYSTORE_BASE64 }}
+          QD_KEYSTORE_PASSWORD: ${{ secrets.QD_KEYSTORE_PASSWORD }}
+          QD_KEY_ALIAS: ${{ secrets.QD_KEY_ALIAS }}
+          QD_KEY_PASSWORD: ${{ secrets.QD_KEY_PASSWORD }}
+        run: |
+          if [ -n "$QD_KEYSTORE_BASE64" ]; then
+            echo "$QD_KEYSTORE_BASE64" | base64 -d > release.jks
+            export QD_KEYSTORE_FILE=release.jks
+          fi
+          ./gradlew assembleRelease bundleRelease
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports-and-outputs
+          path: |
+            app/build/reports/
+            app/build/outputs/apk/release/
+            app/build/outputs/bundle/release/
